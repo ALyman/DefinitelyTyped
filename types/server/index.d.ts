@@ -6,8 +6,8 @@
 
 import { Loadable } from "loadware";
 import { Files } from "formidable";
-
 import * as express from "express";
+import "socket.io";
 
 declare function server(options: Partial<server.Options>, ...routes: server.HandlerList[]): Promise<server.Context>;
 declare function server(...routes: server.HandlerList[]): Promise<server.Context>;
@@ -19,7 +19,8 @@ declare namespace server {
 
     type Path = string | RegExp;
 
-    type Handler = (ctx: Context) => Reply | Promise<Reply> | void | Promise<void>;
+    type Handler<TParams extends object = object, TQuery extends object = object, TSession extends object = object, TData extends object = object> =
+        (ctx: Context<TParams, TQuery, TSession, TData>) => Reply | Promise<Reply> | void | Promise<void>;
     type HandlerList = Loadable<Handler>;
 
     interface Options {
@@ -36,12 +37,12 @@ declare namespace server {
         log: string;
     }
 
-    interface Context {
+    interface Context<TParams extends object = object, TQuery extends object = object, TSession extends object = object, TData extends object = object> {
         options: Options;
-        data: object;
-        params: object;
-        query: object;
-        session: object;
+        data: TData;
+        params: TParams;
+        query: TQuery;
+        session: TSession;
         headers: { [key: string]: string; };
         cookie: { [key: string]: string; };
         files: Files;
@@ -51,6 +52,8 @@ declare namespace server {
         path: string;
         secure: boolean;
         xhr: boolean;
+
+        io: SocketIO.Server;
 
         [key: string]: any;
     }
@@ -109,8 +112,10 @@ declare namespace server {
         del(path: Path, ...handlers: HandlerList[]): Handler;
         del(...handlers: HandlerList[]): Handler;
 
-        error: (name: string, ...handlers: HandlerList[]) => Handler;
-        sub: (domain: string, ...handlers: HandlerList[]) => Handler;
+        error(name: string, ...handlers: HandlerList[]): Handler;
+        sub(domain: string, ...handlers: HandlerList[]): Handler;
+
+        socket<TData extends object = object>(event: string, ...handlers: HandlerList[]): Handler;
     }
 
     interface Utilities {
