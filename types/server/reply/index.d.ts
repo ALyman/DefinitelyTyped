@@ -8,9 +8,9 @@ import { Loadable } from "loadware";
 import { Files } from "formidable";
 import "socket.io";
 
-declare namespace reply {
+import * as server from "../";
 
-    type Reply = string | void;
+declare namespace reply {
 
     interface CookieOptions {
         domain?: string;
@@ -23,6 +23,12 @@ declare namespace reply {
         signed?: boolean;
         sameSite?: string | boolean;
     }
+
+    interface ReplyComplete {
+        __ReplyCompleteMarker__: undefined;
+    }
+
+    type Reply = string | ReplyComplete;
 
     export function download(localPath: string, fileName?: string): void;
     export function json(data: object | any[]): void;
