@@ -49,3 +49,24 @@ server([
   socket('disconnect', updateCounter),
   socket('message', sendMessage)
 ]);
+
+// Imported functions from submodules
+
+import { get as rGet, post as rPost, socket as rSocket } from "server/router";
+import { render as rRender , json as rJson , status as rStatus , send as rSend  } from "server/reply";
+
+server([
+    rGet('/', ctx => rRender('index.hbs')),
+    rPost('/', ctx => rJson(ctx.data)),
+    rGet(ctx => rStatus(404))
+]);
+
+const rsendname = (ctx: Context) => rSend(ctx.user);
+server(setname, sendname);
+
+server([
+  rGet('/', ctx => rRender('index.html')),
+  rSocket('connect', updateCounter),
+  rSocket('disconnect', updateCounter),
+  rSocket('message', sendMessage)
+]);

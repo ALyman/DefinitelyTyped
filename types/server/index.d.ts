@@ -9,11 +9,13 @@ import { Files } from "formidable";
 import * as express from "express";
 import "socket.io";
 
+import * as Router from "./router";
+
 declare function server(options: Partial<server.Options>, ...routes: server.HandlerList[]): Promise<server.Context>;
 declare function server(...routes: server.HandlerList[]): Promise<server.Context>;
 
 declare namespace server {
-    const router: Router;
+    const router: typeof Router;
     const reply: ReplyBuilder;
     const utils: Utilities;
 
@@ -99,24 +101,24 @@ declare namespace server {
 
     type Reply = string | ReplyComplete;
 
-    interface Router {
-        get(path: Path, ...handlers: HandlerList[]): Handler;
-        get(...handlers: HandlerList[]): Handler;
+    // interface Router {
+    //     get(path: Path, ...handlers: HandlerList[]): Handler;
+    //     get(...handlers: HandlerList[]): Handler;
 
-        post(path: Path, ...handlers: HandlerList[]): Handler;
-        post(...handlers: HandlerList[]): Handler;
+    //     post(path: Path, ...handlers: HandlerList[]): Handler;
+    //     post(...handlers: HandlerList[]): Handler;
 
-        put(path: Path, ...handlers: HandlerList[]): Handler;
-        put(...handlers: HandlerList[]): Handler;
+    //     put(path: Path, ...handlers: HandlerList[]): Handler;
+    //     put(...handlers: HandlerList[]): Handler;
 
-        del(path: Path, ...handlers: HandlerList[]): Handler;
-        del(...handlers: HandlerList[]): Handler;
+    //     del(path: Path, ...handlers: HandlerList[]): Handler;
+    //     del(...handlers: HandlerList[]): Handler;
 
-        error(name: string, ...handlers: HandlerList[]): Handler;
-        sub(domain: string, ...handlers: HandlerList[]): Handler;
+    //     error(name: string, ...handlers: HandlerList[]): Handler;
+    //     sub(domain: string, ...handlers: HandlerList[]): Handler;
 
-        socket<TData extends object = object>(event: string, ...handlers: HandlerList[]): Handler;
-    }
+    //     socket<TData extends object = object>(event: string, ...handlers: HandlerList[]): Handler;
+    // }
 
     interface Utilities {
         modern(middleware: express.Handler): Handler;
