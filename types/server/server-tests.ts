@@ -1,11 +1,10 @@
 // Import the library
-import server = require('server');
+import * as server from "server";
 import { Context } from 'server';
 import * as express from 'express';
 
 // Answers to any request
 server((ctx: Context) => 'Hello world');
-
 server({ port: 3000 }, ctx => 'Hello 世界');
 
 const { get, post, socket } = server.router;
@@ -58,7 +57,7 @@ import { render as rRender , json as rJson , status as rStatus , send as rSend  
 server([
     rGet('/', ctx => rRender('index.hbs')),
     rPost('/', ctx => rJson(ctx.data)),
-    rGet(ctx => rStatus(404))
+    rGet(ctx => rStatus(404).send("error"))
 ]);
 
 const rsendname = (ctx: Context) => rSend(ctx.user);
