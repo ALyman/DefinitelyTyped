@@ -9,18 +9,21 @@ import { Files } from "formidable";
 import * as express from "express";
 import "socket.io";
 
-declare function server(options: Partial<server.Options>, ...routes: server.HandlerList[]): Promise<server.Context>;
+import * as Router from "./router";
+import * as Reply from "./reply";
+
 declare function server(...routes: server.HandlerList[]): Promise<server.Context>;
+declare function server(options: Partial<server.Options>, ...routes: server.HandlerList[]): Promise<server.Context>;
 
 declare namespace server {
-    const router: Router;
-    const reply: ReplyBuilder;
+    const router: typeof Router;
+    const reply: typeof Reply;
     const utils: Utilities;
 
     type Path = string | RegExp;
 
     type Handler<TParams extends object = object, TQuery extends object = object, TSession extends object = object, TData extends object = object> =
-        (ctx: Context<TParams, TQuery, TSession, TData>) => Reply | Promise<Reply> | void | Promise<void>;
+        (ctx: Context<TParams, TQuery, TSession, TData>) => Reply.Reply | Promise<Reply.Reply> | void | Promise<void>;
     type HandlerList = Loadable<Handler>;
 
     interface Options {
@@ -56,66 +59,6 @@ declare namespace server {
         io: SocketIO.Server;
 
         [key: string]: any;
-    }
-
-    interface ReplyBodies {
-        download(localPath: string, fileName?: string): ReplyComplete;
-        json(data: object | any[]): ReplyComplete;
-        jsonp(data: object | any[]): ReplyComplete;
-        render(view: string, locals?: any): ReplyComplete;
-        send(body: string): ReplyComplete;
-    }
-
-    interface ReplyStatus {
-        status(status: number): ReplyHeaders & ReplyBodies & ReplyComplete;
-
-        redirect(status: number, path: string): ReplyComplete;
-        redirect(path: string): ReplyComplete;
-    }
-
-    interface ReplyHeaders {
-        cookie(name: string, value: string, opts?: CookieOptions): ReplyHeaders & ReplyBodies;
-        header(field: string, value: string): ReplyHeaders & ReplyBodies;
-        type(type: string): ReplyHeaders & ReplyBodies;
-    }
-
-    interface ReplyComplete {
-        __ReplyCompleteMarker__: undefined;
-    }
-
-    type ReplyBuilder = ReplyStatus & ReplyHeaders & ReplyBodies;
-
-    interface CookieOptions {
-        domain?: string;
-        encode?: typeof encodeURIComponent;
-        expires?: Date;
-        httpOnly?: boolean;
-        maxAge?: number;
-        path?: string;
-        secure?: boolean;
-        signed?: boolean;
-        sameSite?: string | boolean;
-    }
-
-    type Reply = string | ReplyComplete;
-
-    interface Router {
-        get(path: Path, ...handlers: HandlerList[]): Handler;
-        get(...handlers: HandlerList[]): Handler;
-
-        post(path: Path, ...handlers: HandlerList[]): Handler;
-        post(...handlers: HandlerList[]): Handler;
-
-        put(path: Path, ...handlers: HandlerList[]): Handler;
-        put(...handlers: HandlerList[]): Handler;
-
-        del(path: Path, ...handlers: HandlerList[]): Handler;
-        del(...handlers: HandlerList[]): Handler;
-
-        error(name: string, ...handlers: HandlerList[]): Handler;
-        sub(domain: string, ...handlers: HandlerList[]): Handler;
-
-        socket<TData extends object = object>(event: string, ...handlers: HandlerList[]): Handler;
     }
 
     interface Utilities {

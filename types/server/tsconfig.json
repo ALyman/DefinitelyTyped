@@ -18,6 +18,8 @@
     },
     "files": [
         "index.d.ts",
+        "router/index.d.ts",
+        "reply/index.d.ts",
         "server-tests.ts"
     ]
 }
